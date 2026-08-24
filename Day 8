@@ -1,0 +1,165 @@
+Leetcode question 19
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode ptr1 = dummy;
+        ListNode ptr2 = dummy;
+
+        for(int i = 0; i < n; i++) {
+            ptr2 = ptr2.next;
+        }
+        while(ptr2.next != null) {
+            ptr1 = ptr1.next;
+            ptr2 = ptr2.next;
+        }
+        ptr1.next = ptr1.next.next;
+        return dummy.next;
+    }
+}
+Leetcode Question 2
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummyHead = new ListNode(0);
+        ListNode current = dummyHead;
+        int carry = 0;
+
+        while (l1 != null || l2 != null || carry != 0) {
+            int x = (l1 != null) ? l1.val : 0;
+            int y = (l2 != null) ? l2.val : 0;
+
+            int sum = x + y + carry;
+            carry = sum / 10;
+
+            current.next = new ListNode(sum % 10);
+            current = current.next;
+
+            if (l1 != null) l1 = l1.next;
+            if (l2 != null) l2 = l2.next;
+        }
+
+        return dummyHead.next;
+    }
+}
+Leetcode Question 141
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) {
+            return false;
+        }
+
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next; // moves 1 step
+            fast = fast.next.next; // moves 2 steps
+
+            if (slow == fast) {
+                return true; // pointers met, cycle detected
+            }
+        }
+        return false; // fast reached the end, no cycle
+    }
+}
+Leetcode Question 344
+class Solution {
+    public void reverseString(char[] s) {
+        int left = 0;
+        int right = s.length - 1;
+
+        while (left < right) {
+            char temp = s[left];
+            s[left] = s[right];
+            s[right] = temp;
+
+            left++;
+            right--;
+        }
+    }
+}
+Leetcode Question 143
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public void reorderList(ListNode head) {
+        if (head == null || head.next == null) return;
+
+        Deque<ListNode> deque = new ArrayDeque<>();
+        ListNode curr = head.next;
+
+        // Step 1: Push all remaining nodes into the deque
+        while (curr != null) {
+            deque.addLast(curr);
+            curr = curr.next;
+        }
+
+        // Step 2: Reconstruct the list by alternating ends
+        curr = head;
+        boolean takeFromEnd = true;
+
+        while (!deque.isEmpty()) {
+            if (takeFromEnd) {
+                curr.next = deque.pollLast();
+            } else {
+                curr.next = deque.pollFirst();
+            }
+            curr = curr.next;
+            takeFromEnd = !takeFromEnd; // Alternate direction
+        }
+
+        // Step 3: Terminate the list to prevent cycles
+        curr.next = null;
+    }
+}
