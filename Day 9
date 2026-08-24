@@ -1,0 +1,221 @@
+Leetcode Question 102
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<List<Integer>> levelOrder(TreeNode root) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            List<Integer> currentLevel = new ArrayList<>();
+
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode currentNode = queue.poll();
+                currentLevel.add(currentNode.val);
+
+                if (currentNode.left != null) {
+                    queue.offer(currentNode.left);
+                }
+                if (currentNode.right != null) {
+                    queue.offer(currentNode.right);
+                }
+            }
+
+            result.add(currentLevel);
+        }
+
+        return result;
+    }
+}
+Leetcode Question 199
+
+    import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        dfs(root, 0, result);
+        return result;
+    }
+
+    private void dfs(TreeNode node, int depth, List<Integer> result) {
+        if (node == null) return;
+
+        // If visiting this depth for the first time, add the node
+        if (depth == result.size()) {
+            result.add(node.val);
+        }
+
+        // Visit right subtree first, then left subtree
+        dfs(node.right, depth + 1, result);
+        dfs(node.left, depth + 1, result);
+    }
+}
+Leetcode Question 543
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int maxDiameter = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        maxDiameter = 0;
+        calculateHeight(root);
+        return maxDiameter;
+    }
+
+    private int calculateHeight(TreeNode node) {
+        if (node == null) return 0;
+
+        int leftHeight = calculateHeight(node.left);
+        int rightHeight = calculateHeight(node.right);
+
+        // Update the maximum diameter found so far
+        maxDiameter = Math.max(maxDiameter, leftHeight + rightHeight);
+
+        // Return height of the current subtree
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+}
+Leetcode question 98
+class Solution {
+    private Integer prev = null;
+
+    public boolean isValidBST(TreeNode root) {
+        return inOrder(root);
+    }
+
+    private boolean inOrder(TreeNode node) {
+        if (node == null) return true;
+
+        if (!inOrder(node.left)) return false;
+
+        if (prev != null && node.val <= prev) return false;
+        prev = node.val;
+
+        return inOrder(node.right);
+    }
+}
+Leetcode Question 430
+/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node prev;
+    public Node next;
+    public Node child;
+};
+*/
+
+class Solution {
+    public Node flatten(Node head) {
+        if (head == null) return null;
+
+        Node curr = head;
+
+        while (curr != null) {
+            if (curr.child != null) {
+                Node next = curr.next;
+                Node childHead = curr.child;
+
+                // 1. Connect curr to child
+                curr.next = childHead;
+                childHead.prev = curr;
+                curr.child = null; // Clear child pointer
+
+                // 2. Find the end of the child list
+                Node childTail = childHead;
+                while (childTail.next != null) {
+                    childTail = childTail.next;
+                }
+
+                // 3. Connect childTail to original next node
+                childTail.next = next;
+                if (next != null) {
+                    next.prev = childTail;
+                }
+            }
+
+            curr = curr.next;
+        }
+
+        return head;
+    }
+}
+Leetcode Question 235
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode curr = root;
+
+        while (curr != null) {
+            if (p.val < curr.val && q.val < curr.val) {
+                curr = curr.left; // Both nodes are in the left subtree
+            } else if (p.val > curr.val && q.val > curr.val) {
+                curr = curr.right; // Both nodes are in the right subtree
+            } else {
+                return curr; // Split point or current node is p or q
+            }
+        }
+
+        return null;
+    }
+}
