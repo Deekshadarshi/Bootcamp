@@ -1,0 +1,180 @@
+Leetcode 56
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length <= 1) {
+            return intervals;
+        }
+
+        // Step 1: Sort intervals by start time
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+
+        List<int[]> merged = new ArrayList<>();
+        int[] currentInterval = intervals[0];
+        merged.add(currentInterval);
+
+        // Step 2: Iterate through intervals and merge overlapping ones
+        for (int[] interval : intervals) {
+            int currentEnd = currentInterval[1];
+            int nextStart = interval[0];
+            int nextEnd = interval[1];
+
+            if (nextStart <= currentEnd) { // Overlap
+                currentInterval[1] = Math.max(currentEnd, nextEnd);
+            } else { // No overlap
+                currentInterval = interval;
+                merged.add(currentInterval);
+            }
+        }
+
+        return merged.toArray(new int[merged.size()][]);
+    }
+}
+Leetcode 1
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        // Map to store number values as keys and their indices as values
+        Map<Integer, Integer> map = new HashMap<>();
+        
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            
+            // If the complement exists in the map, we found our pair
+            if (map.containsKey(complement)) {
+                return new int[] { map.get(complement), i };
+            }
+            
+            // Otherwise, store the current number and its index
+            map.put(nums[i], i);
+        }
+        
+        return new int[] {};
+    }
+}
+Leetcode 560
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+    public int subarraySum(int[] nums, int k) {
+        int count = 0;
+        int currentSum = 0;
+        Map<Integer, Integer> prefixMap = new HashMap<>();
+        prefixMap.put(0, 1);
+
+        for (int num : nums) {
+            currentSum += num;
+            if (prefixMap.containsKey(currentSum - k)) {
+                count += prefixMap.get(currentSum - k);
+            }
+            prefixMap.put(currentSum, prefixMap.getOrDefault(currentSum, 0) + 1);
+        }
+
+        return count;
+    }
+}
+Leetcode question 167
+class Solution {
+    public int[] twoSum(int[] numbers, int target) {
+        int left = 0;
+        int right = numbers.length - 1;
+        
+        while (left < right) {
+            int currentSum = numbers[left] + numbers[right];
+            
+            if (currentSum == target) {
+                return new int[] { left + 1, right + 1 };
+            } else if (currentSum < target) {
+                left++; 
+            } else {
+                right--; 
+            }
+        }
+        
+        return new int[] {};
+    }
+}
+Leetcode question 581
+class Solution {
+    public int findUnsortedSubarray(int[] nums) {
+        int n = nums.length;
+        int start = -1;
+        int end = -2; 
+        
+        int max = nums[0];
+        int min = nums[n - 1];
+        
+       
+        for (int i = 1; i < n; i++) {
+            max = Math.max(max, nums[i]);
+            if (nums[i] < max) {
+                end = i;
+            }
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            min = Math.min(min, nums[i]);
+            if (nums[i] > min) {
+                start = i;
+            }
+        }
+        
+        return end - start + 1;
+    }
+}
+Leetcode question 986
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        List<int[]> result = new ArrayList<>();
+        int i = 0;
+        int j = 0;
+
+        while (i < firstList.length && j < secondList.length) {
+            // Find the start and end of the intersection range
+            int start = Math.max(firstList[i][0], secondList[j][0]);
+            int end = Math.min(firstList[i][1], secondList[j][1]);
+
+            // If a valid intersection exists, add it to the result
+            if (start <= end) {
+                result.add(new int[]{start, end});
+            }
+
+            // Move the pointer pointing to the interval that ends first
+            if (firstList[i][1] < secondList[j][1]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+
+        return result.toArray(new int[resulclass Solution {
+    public int minSubArrayLen(int target, int[] nums) {
+        int minLength = Integer.MAX_VALUE;
+        int currentSum = 0;
+        int left = 0;
+
+        for (int right = 0; right < nums.length; right++) {
+            currentSum += nums[right];
+
+            // Shrink window from the left while the condition holds
+            while (currentSum >= target) {
+                minLength = Math.min(minLength, right - left + 1);
+                currentSum -= nums[left];
+                left++;
+            }
+        }
+
+        return minLength == Integer.MAX_VALUE ? 0 : minLength;
+    }
+}t.size()][]);
+    }
+}
+Leetcode Question 209
