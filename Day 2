@@ -1,0 +1,155 @@
+Leetcode question 55
+class Solution {
+    public String intToRoman(int num) {
+        // All possible Roman numeral values sorted in descending order
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        
+        StringBuilder roman = new StringBuilder();
+        
+        // Loop through the values array
+        for (int i = 0; i < values.length; i++) {
+            // Append the symbol while num is greater than or equal to the current value
+            while (num >= values[i]) {
+                roman.append(symbols[i]);
+                num -= values[i];
+            }
+        }
+        
+        return roman.toString();
+    }
+}
+Leetcode question 238
+class Solution {
+    public int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] answer = new int[n];
+        answer[0] = 1;
+        for (int i = 1; i < n; i++) {
+            answer[i] = answer[i - 1] * nums[i - 1];
+        }
+        int rightProduct = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            answer[i] = answer[i] * rightProduct;
+            rightProduct *= nums[i]; 
+        }
+        
+        return answer;
+    }
+}
+Leetcode 189
+class Solution {
+    public static void reverse(int[] nums,int start,int end){
+        while(start<end){
+            int temp = nums[start];
+            nums[start]=nums[end];
+            nums[end]=temp;
+            start++;
+            end--;
+        }
+    }
+    public void rotate(int[] nums, int k) {
+
+       int n=nums.length;
+       k=k % n;
+       reverse(nums,0,n-1);
+       reverse(nums,0,k-1);
+       reverse(nums,k,n-1); 
+    }
+}
+Leetcode 56
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length <= 1) {
+            return intervals;
+        }
+
+        // Step 1: Sort intervals by start time
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+
+        List<int[]> merged = new ArrayList<>();
+        int[] currentInterval = intervals[0];
+        merged.add(currentInterval);
+
+        // Step 2: Iterate through intervals and merge overlapping ones
+        for (int[] interval : intervals) {
+            int currentEnd = currentInterval[1];
+            int nextStart = interval[0];
+            int nextEnd = interval[1];
+
+            if (nextStart <= currentEnd) { // Overlap
+                currentInterval[1] = Math.max(currentEnd, nextEnd);
+            } else { // No overlap
+                currentInterval = interval;
+                merged.add(currentInterval);
+            }
+        }
+
+        return merged.toArray(new int[merged.size()][]);
+    }
+}
+Leetcode Question 134
+class Solution {
+    public int canCompleteCircuit(int[] gas, int[] cost) {
+        int totalGas = 0;
+        int totalCost = 0;
+        int currentTank = 0;
+        int startStation = 0;
+
+        for (int i = 0; i < gas.length; i++) {
+            totalGas += gas[i];
+            totalCost += cost[i];
+            currentTank += gas[i] - cost[i];
+
+            // If current gas is negative, we cannot reach station i + 1 from startStation
+            if (currentTank < 0) {
+                startStation = i + 1; // Try starting from the next station
+                currentTank = 0;      // Reset tank balance
+            }
+        }
+
+        // If total gas available is less than total cost, circuit is impossible
+        return (totalGas >= totalCost) ? startStation : -1;
+    }
+}
+Leetcode Question 54
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> spiralOrder(int[][] matrix) {
+        List<Integer> result = new ArrayList<>();
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int totalElements = m * n;
+
+        int[] dr = {0, 1, 0, -1};
+        int[] dc = {1, 0, -1, 0};
+
+        int r = 0, c = 0, di = 0;
+        int VISITED = 101;
+
+        for (int i = 0; i < totalElements; i++) {
+            result.add(matrix[r][c]);
+            matrix[r][c] = VISITED;
+
+            int nextR = r + dr[di];
+            int nextC = c + dc[di];
+
+            if (nextR >= 0 && nextR < m && nextC >= 0 && nextC < n && matrix[nextR][nextC] != VISITED) {
+                r = nextR;
+                c = nextC;
+            } else {
+                di = (di + 1) % 4;
+                r += dr[di];
+                c += dc[di];
+            }
+        }
+
+        return result;
+    }
+}
