@@ -1,0 +1,84 @@
+Leetcode question 8
+class Solution {
+    public int myAtoi(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+
+        int index = 0;
+        int n = s.length();
+        while (index < n && s.charAt(index) == ' ') {
+            index++;
+        }
+        if (index == n) {
+            return 0;
+        }
+        int sign = 1;
+        if (s.charAt(index) == '+' || s.charAt(index) == '-') {
+            sign = (s.charAt(index) == '-') ? -1 : 1;
+            index++;
+        }
+        int result = 0;
+        while (index < n) {
+            char ch = s.charAt(index);
+            if (ch < '0' || ch > '9') {
+                break; 
+            }
+
+            int digit = ch - '0';
+            if (result > Integer.MAX_VALUE / 10 || (result == Integer.MAX_VALUE / 10 && digit > 7)) {
+                return (sign == 1) ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+            }
+
+            result = result * 10 + digit;
+            index++;
+        }
+
+        return result * sign;
+    }
+}
+
+
+
+
+Leetcode question 165
+class Solution {
+    public int compareVersion(String version1, String version2) {
+        String[] v1 = version1.split("\\.");
+        String[] v2 = version2.split("\\.");
+        
+        int n = Math.max(v1.length, v2.length);
+        
+        for (int i = 0; i < n; i++) {
+            int num1 = i < v1.length ? Integer.parseInt(v1[i]) : 0;
+            int num2 = i < v2.length ? Integer.parseInt(v2[i]) : 0;
+            
+            if (num1 < num2) return -1;
+            if (num1 > num2) return 1;
+        }
+        
+        return 0;
+    }
+}
+
+Leetcode question 12
+class Solution {
+    public String intToRoman(int num) {
+        // All possible Roman numeral values sorted in descending order
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        
+        StringBuilder roman = new StringBuilder();
+        
+        // Loop through the values array
+        for (int i = 0; i < values.length; i++) {
+            // Append the symbol while num is greater than or equal to the current value
+            while (num >= values[i]) {
+                roman.append(symbols[i]);
+                num -= values[i];
+            }
+        }
+        
+        return roman.toString();
+    }
+}
