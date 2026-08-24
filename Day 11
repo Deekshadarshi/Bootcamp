@@ -1,0 +1,222 @@
+Leetcode question 1701
+class Solution {
+    public double averageWaitingTime(int[][] customers) {
+        long totalWaitingTime = 0;
+        long currentTime = 0;
+
+        for (int[] customer : customers) {
+            int arrival = customer[0];
+            int time = customer[1];
+
+            // If chef is idle, start when the customer arrives
+            if (currentTime < arrival) {
+                currentTime = arrival;
+            }
+
+            // Chef finishes the order at currentTime + time
+            currentTime += time;
+            
+            // Waiting time = finish time - arrival time
+            totalWaitingTime += (currentTime - arrival);
+        }
+
+        return (double) totalWaitingTime / customers.length;
+    }
+}
+Leetcode question 912
+class Solution {
+    public int[] sortArray(int[] nums) {
+        if (nums == null || nums.length <= 1) return nums;
+        int[] temp = new int[nums.length];
+        mergeSort(nums, 0, nums.length - 1, temp);
+        return nums;
+    }
+
+    private void mergeSort(int[] nums, int left, int right, int[] temp) {
+        if (left >= right) return;
+
+        int mid = left + (right - left) / 2;
+        
+        // Recursively sort left and right halves
+        mergeSort(nums, left, mid, temp);
+        mergeSort(nums, mid + 1, right, temp);
+        
+        // Merge the two sorted halves
+        merge(nums, left, mid, right, temp);
+    }
+
+    private void merge(int[] nums, int left, int mid, int right, int[] temp) {
+        int i = left;
+        int j = mid + 1;
+        int k = left;
+
+        // Copy elements to temp in sorted order
+        while (i <= mid && j <= right) {
+            if (nums[i] <= nums[j]) {
+                temp[k++] = nums[i++];
+            } else {
+                temp[k++] = nums[j++];
+            }
+        }
+
+        // Copy remaining elements from left half
+        while (i <= mid) {
+            temp[k++] = nums[i++];
+        }
+
+        // Copy remaining elements from right half
+        while (j <= right) {
+            temp[k++] = nums[j++];
+        }
+
+        // Copy merged elements back into original array
+        for (int p = left; p <= right; p++) {
+            nums[p] = temp[p];
+        }
+    }
+}
+Leetcode question 207
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adj = new ArrayList<>();
+        int[] inDegree = new int[numCourses];
+
+        for (int i = 0; i < numCourses; i++) {
+            adj.add(new ArrayList<>());
+        }
+
+        // Build the graph: b -> a (b is a prerequisite for a)
+        for (int[] req : prerequisites) {
+            int course = req[0];
+            int prereq = req[1];
+            adj.get(prereq).add(course);
+            inDegree[course]++;
+        }
+
+        // Add all courses with 0 prerequisites to the queue
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.offer(i);
+            }
+        }
+
+        int completedCourses = 0;
+
+        // Process courses in topological order
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            completedCourses++;
+
+            for (int nextCourse : adj.get(current)) {
+                inDegree[nextCourse]--;
+                if (inDegree[nextCourse] == 0) {
+                    queue.offer(nextCourse);
+                }
+            }
+        }
+
+        // If all courses were processed, there was no cycle
+        return completedCourses == numCourses;
+    }
+}
+Leetcode question 200
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid == null || grid.length == 0) return 0;
+
+        int numIslands = 0;
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (grid[r][c] == '1') {
+                    numIslands++;
+                    dfs(grid, r, c);
+                }
+            }
+        }
+
+        return numIslands;
+    }
+
+    private void dfs(char[][] grid, int r, int c) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+
+        // Base case: check bounds and if cell is water ('0')
+        if (r < 0 || r >= rows || c < 0 || c >= cols || grid[r][c] == '0') {
+            return;
+        }
+
+        // Mark cell as visited (sink the land)
+        grid[r][c] = '0';
+
+        // Explore all 4 adjacent directions
+        dfs(grid, r + 1, c); // Down
+        dfs(grid, r - 1, c); // Up
+        dfs(grid, r, c + 1); // Right
+        dfs(grid, r, c - 1); // Left
+    }
+}
+Leetcode question 33
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+
+            if (nums[mid] == target) {
+                return mid;
+            }
+
+            // Check if left half is sorted
+            if (nums[left] <= nums[mid]) {
+                if (nums[left] <= target && target < nums[mid]) {
+                    right = mid - 1; // Target is in the left half
+                } else {
+                    left = mid + 1;  // Target is in the right half
+                }
+            } 
+            // Otherwise, right half must be sorted
+            else {
+                if (nums[mid] < target && target <= nums[right]) {
+                    left = mid + 1;  // Target is in the right half
+                } else {
+                    right = mid - 1; // Target is in the left half
+                }
+            }
+        }
+
+        return -1;
+    }
+}
+Leetcode Question 704
+class Solution {
+    public int search(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+
+            if (nums[mid] == target) {
+                return mid;
+            } else if (nums[mid] < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return -1;
+    }
+}
