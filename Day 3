@@ -1,0 +1,214 @@
+Leetcode question 46
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, new ArrayList<>(), new boolean[nums.length], result);
+        return result;
+    }
+
+    private void backtrack(int[] nums, List<Integer> current, boolean[] used, List<List<Integer>> result) {
+        // Base Case: If current path length equals nums length, we found a permutation
+        if (current.size() == nums.length) {
+            result.add(new ArrayList<>(current));
+            return;
+        }
+
+        for (int i = 0; i < nums.length; i++) {
+            if (used[i]) continue; // Skip already used elements
+
+            // 1. Choose
+            used[i] = true;
+            current.add(nums[i]);
+
+            // 2. Explore
+            backtrack(nums, current, used, result);
+
+            // 3. Backtrack (undo choice)
+            current.remove(current.size() - 1);
+            used[i] = false;
+        }
+    }
+}
+Leetcode question 42
+class Solution {
+    public int trap(int[] height) {
+        int n = height.length;
+
+        int[] left = new int[n];
+         int[] right = new int[n];
+
+         left[0] = height[0];
+         for(int i =1;i<n;i++){
+            left[i] = Math.max(left[i-1],height[i]);
+         }
+         right[n-1] = height[n-1];
+        for(int i=n-2;i>=0;i--){
+            right[i] = Math.max(right[i+1], height[i]);
+        }
+        int waterLogged = 0;
+        for(int i =0;i<n;i++){
+            waterLogged+= Math.min(left[i],right[i])-height[i];
+        }
+        return waterLogged;    
+        
+        }
+}
+Leetcode question 29
+class Solution {
+    public int divide(int dividend, int divisor) {
+        // Edge case: overflow when dividing MIN_VALUE by -1
+        if (dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE;
+        }
+
+        // Determine sign of the result
+        boolean isNegative = (dividend < 0) ^ (divisor < 0);
+
+        // Convert to absolute values using long to prevent overflow
+        long absDividend = Math.abs((long) dividend);
+        long absDivisor = Math.abs((long) divisor);
+
+        int result = 0;
+
+        while (absDividend >= absDivisor) {
+            long tempDivisor = absDivisor;
+            int count = 1;
+
+            // Shift tempDivisor left until it exceeds absDividend
+            while (absDividend >= (tempDivisor << 1)) {
+                tempDivisor <<= 1;
+                count <<= 1;
+            }
+
+            // Subtract the largest shifted divisor and add count to quotient
+            absDividend -= tempDivisor;
+            result += count;
+        }
+
+        return isNegative ? -result : result;
+    }
+}
+Leetcode question 17
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    // Digit to letters mapping array (indices 0 and 1 are empty)
+    private static final String[] KEYPAD = {
+        "",     "",     "abc",  "def", 
+        "ghi",  "jkl",  "mno", 
+        "pqrs", "tuv",  "wxyz"
+    };
+
+    public List<String> letterCombinations(String digits) {
+        List<String> result = new ArrayList<>();
+        
+        // Edge Case: Empty input string
+        if (digits == null || digits.length() == 0) {
+            return result;
+        }
+
+        backtrack(digits, 0, new StringBuilder(), result);
+        return result;
+    }
+
+    private void backtrack(String digits, int index, StringBuilder current, List<String> result) {
+        // Base Case: All digits processed
+        if (index == digits.length()) {
+            result.add(current.toString());
+            return;
+        }
+
+        // Get the matching letters for current digit
+        String letters = KEYPAD[digits.charAt(index) - '0'];
+
+        for (int i = 0; i < letters.length(); i++) {
+            char c = letters.charAt(i);
+
+            // 1. Choose
+            current.append(c);
+
+            // 2. Explore
+            backtrack(digits, index + 1, current, result);
+
+            // 3. Backtrack (undo choice)
+            current.deleteCharAt(current.length() - 1);
+        }
+    }
+}
+Leetcode Question 79
+class Solution {
+    public boolean exist(char[][] board, String word) {
+        int rows = board.length;
+        int cols = board[0].length;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                // Start DFS search if first letter matches
+                if (board[r][c] == word.charAt(0)) {
+                    if (dfs(board, word, r, c, 0)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(char[][] board, String word, int r, int c, int index) {
+        // Base case: full word matched
+        if (index == word.length()) {
+            return true;
+        }
+
+        // Boundary checks and character mismatch check
+        if (r < 0 || r >= board.length || c < 0 || c >= board[0].length || board[r][c] != word.charAt(index)) {
+            return false;
+        }
+
+        // 1. Choose: Mark cell as visited
+        char temp = board[r][c];
+        board[r][c] = '#';
+
+        // 2. Explore 4 directions (Up, Down, Left, Right)
+        boolean found = dfs(board, word, r + 1, c, index + 1) ||
+                        dfs(board, word, r - 1, c, index + 1) ||
+                        dfs(board, word, r, c + 1, index + 1) ||
+                        dfs(board, word, r, c - 1, index + 1);
+
+        // 3. Backtrack: Restore original character
+        board[r][c] = temp;
+
+        return found;
+    }
+}
+Leetcode question 78
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        backtrack(nums, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+    private void backtrack(int[] nums, int start, List<Integer> current, List<List<Integer>> result) {
+        // Add the current path state to result (every state is a valid subset)
+        result.add(new ArrayList<>(current));
+
+        for (int i = start; i < nums.length; i++) {
+            // 1. Choose
+            current.add(nums[i]);
+
+            // 2. Explore (pass i + 1 to avoid reusing elements)
+            backtrack(nums, i + 1, current, result);
+
+            // 3. Backtrack (undo choice)
+            current.remove(current.size() - 1);
+        }
+    }
+}
