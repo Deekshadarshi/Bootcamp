@@ -1,0 +1,159 @@
+Leetcode 136
+class Solution {
+    public int singleNumber(int[] nums) {
+        int result = 0;
+
+        // XOR all numbers in the array
+        for (int num : nums) {
+            result ^= num;
+        }
+
+        return result;
+    }
+}
+Leetcode 1899
+class Solution {
+    public boolean mergeTriplets(int[][] triplets, int[] target) {
+        // Track whether we can form target[0], target[1], and target[2]
+        boolean[] found = new boolean[3];
+
+        for (int[] t : triplets) {
+            // Skip triplets that have any element larger than the target element
+            if (t[0] > target[0] || t[1] > target[1] || t[2] > target[2]) {
+                continue;
+            }
+
+            // Mark matched target elements
+            for (int i = 0; i < 3; i++) {
+                if (t[i] == target[i]) {
+                    found[i] = true;
+                }
+            }
+
+            // Early exit if all targets are found
+            if (found[0] && found[1] && found[2]) {
+                return true;
+            }
+        }
+
+        return found[0] && found[1] && found[2];
+    }
+}
+Leetcode 191
+class Solution {
+    public int hammingWeight(int n) {
+        int count = 0;
+        
+        while (n != 0) {
+            n = n & (n - 1); // Clears the lowest set bit
+            count++;
+        }
+        
+        return count;
+    }
+}
+Leetcode 301
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<String> removeInvalidParentheses(String s) {
+        int leftRem = 0;
+        int rightRem = 0;
+
+        // Step 1: Count minimum removals needed for left and right parentheses
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '(') {
+                leftRem++;
+            } else if (c == ')') {
+                if (leftRem > 0) {
+                    leftRem--; // Matches with an earlier '('
+                } else {
+                    rightRem++; // Excess ')'
+                }
+            }
+        }
+
+        List<String> result = new ArrayList<>();
+        backtrack(s, 0, 0, leftRem, rightRem, new StringBuilder(), result);
+        return result;
+    }
+
+    private void backtrack(String s, int index, int balance, int leftRem, int rightRem, StringBuilder path, List<String> result) {
+        // Pruning: invalid prefix balance
+        if (balance < 0 || leftRem < 0 || rightRem < 0) {
+            return;
+        }
+
+        // Base case
+        if (index == s.length()) {
+            if (balance == 0 && leftRem == 0 && rightRem == 0) {
+                result.add(path.toString());
+            }
+            return;
+        }
+
+        char c = s.charAt(index);
+        int len = path.length();
+
+        if (c == '(') {
+            // Option 1: Remove '(' (if we still have left removals allowed)
+            // Skip duplicates: if consecutive '(', only prune/remove at the first choice
+            int nextIdx = index;
+            while (nextIdx < s.length() && s.charAt(nextIdx) == '(') {
+                nextIdx++;
+            }
+            int count = nextIdx - index;
+
+            // Try removing 1 to count '('
+            for (int k = 1; k <= count && k <= leftRem; k++) {
+                path.append("(".repeat(count - k));
+                backtrack(s, nextIdx, balance + (count - k), leftRem - k, rightRem, path, result);
+                path.setLength(len);
+            }
+
+            // Option 2: Keep all '('
+            path.append("(".repeat(count));
+            backtrack(s, nextIdx, balance + count, leftRem, rightRem, path, result);
+            path.setLength(len);
+
+        } else if (c == ')') {
+            // Option 1: Remove ')' (if we still have right removals allowed)
+            // Skip duplicates: if consecutive ')', process block together
+            int nextIdx = index;
+            while (nextIdx < s.length() && s.charAt(nextIdx) == ')') {
+                nextIdx++;
+            }
+            int count = nextIdx - index;
+
+            // Try keeping k ')' and removing (count - k) ')'
+            for (int k = 0; k <= count; k++) {
+                int removed = count - k;
+                if (removed <= rightRem && balance >= k) {
+                    path.append(")".repeat(k));
+                    backtrack(s, nextIdx, balance - k, leftRem, rightRem - removed, path, result);
+                    path.setLength(len);
+                }
+            }
+
+        } else {
+            // Non-parenthesis characters are always kept
+            path.append(c);
+            backtrack(s, index + 1, balance, leftRem, rightRem, path, result);
+            path.setLength(len);
+        }
+    }
+}
+Leetcode 338
+class Solution {
+    public int[] countBits(int n) {
+        int[] ans = new int[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            ans[i] = ans[i >> 1] + (i & 1);
+        }
+
+        return ans;
+    }
+}
