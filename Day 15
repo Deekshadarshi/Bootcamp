@@ -1,0 +1,93 @@
+Leetcode 802
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> eventualSafeNodes(int[][] graph) {
+        int n = graph.length;
+        int[] state = new int[n]; // 0: unvisited, 1: visiting, 2: safe
+        List<Integer> safeNodes = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (dfs(graph, i, state)) {
+                safeNodes.add(i);
+            }
+        }
+
+        return safeNodes;
+    }
+
+    private boolean dfs(int[][] graph, int node, int[] state) {
+        // If already visited, return true if it is safe, false if visiting (cycle)
+        if (state[node] != 0) {
+            return state[node] == 2;
+        }
+
+        // Mark current node as visiting
+        state[node] = 1;
+
+        // Traverse all outgoing edges
+        for (int neighbor : graph[node]) {
+            // If any neighbor leads to a cycle/unsafe path, this node is unsafe
+            if (!dfs(graph, neighbor, state)) {
+                return false;
+            }
+        }
+
+        // Mark node as safe
+        state[node] = 2;
+        return true;
+    }
+}
+Leetcode 842
+import java.util.ArrayList;
+import java.util.List;
+
+class Solution {
+    public List<Integer> splitIntoFibonacci(String num) {
+        List<Integer> result = new ArrayList<>();
+        backtrack(num, 0, result);
+        return result;
+    }
+
+    private boolean backtrack(String num, int index, List<Integer> result) {
+        // Base case: reached the end of the string and found at least 3 numbers
+        if (index == num.length() && result.size() >= 3) {
+            return true;
+        }
+
+        long currentNum = 0;
+        for (int i = index; i < num.length(); i++) {
+            // Numbers cannot have leading zeros (except '0' itself)
+            if (i > index && num.charAt(index) == '0') {
+                break;
+            }
+
+            currentNum = currentNum * 10 + (num.charAt(i) - '0');
+
+            // Must fit within a 32-bit signed integer
+            if (currentNum > Integer.MAX_VALUE) {
+                break;
+            }
+
+            int size = result.size();
+            // Pruning: if we have 2 or more numbers, check Fibonacci condition
+            if (size >= 2) {
+                long sum = (long) result.get(size - 1) + result.get(size - 2);
+                if (currentNum < sum) {
+                    continue; // Keep extending current number to reach sum
+                } else if (currentNum > sum) {
+                    break; // Current number already exceeds expected sum, stop trying longer numbers
+                }
+            }
+
+            result.add((int) currentNum);
+            if (backtrack(num, i + 1, result)) {
+                return true;
+            }
+            result.remove(result.size() - 1); // Backtrack
+        }
+
+        return false;
+    }
+}
