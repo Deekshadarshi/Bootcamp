@@ -1,0 +1,119 @@
+Leetcode 329
+  class Solution {
+    private static final int[][] DIRECTIONS = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+    public int longestIncreasingPath(int[][] matrix) {
+        if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+            return 0;
+        }
+
+        int m = matrix.length;
+        int n = matrix[0].length;
+        int[][] memo = new int[m][n];
+        int maxLength = 0;
+
+        // Try starting the path from every single cell
+        for (int r = 0; r < m; r++) {
+            for (int c = 0; c < n; c++) {
+                maxLength = Math.max(maxLength, dfs(matrix, r, c, memo));
+            }
+        }
+
+        return maxLength;
+    }
+
+    private int dfs(int[][] matrix, int r, int c, int[][] memo) {
+        // Return already computed longest path starting from (r, c)
+        if (memo[r][c] != 0) {
+            return memo[r][c];
+        }
+
+        int maxPath = 1;
+
+        // Explore 4-directional neighbors
+        for (int[] dir : DIRECTIONS) {
+            int nr = r + dir[0];
+            int nc = c + dir[1];
+
+            // Only move if neighbor is within bounds and strictly greater
+            if (nr >= 0 && nr < matrix.length && nc >= 0 && nc < matrix[0].length 
+                && matrix[nr][nc] > matrix[r][c]) {
+                maxPath = Math.max(maxPath, 1 + dfs(matrix, nr, nc, memo));
+            }
+        }
+      Leetcode 212
+        import java.util.*;
+
+class Solution {
+    class TrieNode {
+        TrieNode[] children = new TrieNode[26];
+        String word = null;
+    }
+
+    public List<String> findWords(char[][] board, String[] words) {
+        List<String> result = new ArrayList<>();
+        TrieNode root = new TrieNode();
+
+        // 1. Build Trie
+        for (String w : words) {
+            TrieNode node = root;
+            for (char c : w.toCharArray()) {
+                int idx = c - 'a';
+                if (node.children[idx] == null) {
+                    node.children[idx] = new TrieNode();
+                }
+                node = node.children[idx];
+            }
+            node.word = w; // Store full word at the terminal node
+        }
+
+        // 2. Search board
+        int rows = board.length, cols = board[0].length;
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                if (root.children[board[r][c] - 'a'] != null) {
+                    dfs(board, r, c, root, result);
+                }
+            }
+        }
+        return result;
+    }
+
+    private void dfs(char[][] board, int r, int c, TrieNode parent, List<String> result) {
+        char letter = board[r][c];
+        TrieNode currNode = parent.children[letter - 'a'];
+
+        // Word found
+        if (currNode.word != null) {
+            result.add(currNode.word);
+            currNode.word = null; // Prevent duplicate entries
+        }
+
+        // Mark cell as visited
+        board[r][c] = '#';
+
+        // Explore adjacent directions: Up, Down, Left, Right
+        int[] rowOffset = {-1, 1, 0, 0};
+        int[] colOffset = {0, 0, -1, 1};
+
+        for (int i = 0; i < 4; i++) {
+            int nr = r + rowOffset[i];
+            int nc = c + colOffset[i];
+
+            if (nr >= 0 && nr < board.length && nc >= 0 && nc < board[0].length) {
+                if (board[nr][nc] != '#' && currNode.children[board[nr][nc] - 'a'] != null) {
+                    dfs(board, nr, nc, currNode, result);
+                }
+            }
+        }
+
+        // Backtrack: Restore original character
+        board[r][c] = letter;
+    }
+}
+
+        // Cache result before returning
+        memo[r][c] = maxPath;
+        return maxPath;
+    }
+}
