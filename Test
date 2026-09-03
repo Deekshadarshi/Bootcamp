@@ -1,0 +1,284 @@
+1)Product Of Array Except Self
+import java.util.Arrays;
+
+public class Solution {
+    public static int[] productExceptSelf(int[] nums) {
+        int n = nums.length;
+        int[] answer = new int[n];
+        answer[0] = 1;
+        for (int i = 1; i < n; i++) {
+            answer[i] = answer[i - 1] * nums[i - 1];
+        }
+        int suffix = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            answer[i] *= suffix;
+            suffix *= nums[i];
+        }
+
+        return answer;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {1, 2, 3, 4};
+        int[] result = productExceptSelf(nums);
+        System.out.println(Arrays.toString(result));
+    }
+}
+2) Longest Consecutive Sequence
+import java.util.HashSet;
+import java.util.Set;
+
+public class Solution {
+    public static int longestConsecutive(int[] nums) {
+        Set<Integer> numSet = new HashSet<>();
+        for (int num : nums) {
+            numSet.add(num);
+        }
+
+        int longestStreak = 0;
+
+        for (int num : numSet) {
+            if (!numSet.contains(num - 1)) {
+                int currentNum = num;
+                int currentStreak = 1;
+
+                while (numSet.contains(currentNum + 1)) {
+                    currentNum += 1;
+                    currentStreak += 1;
+                }
+
+                longestStreak = Math.max(longestStreak, currentStreak);
+            }
+        }
+
+        return longestStreak;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {100, 4, 200, 1, 3, 2};
+        System.out.println(longestConsecutive(nums)); 
+    }
+}
+3) 3Sum
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Solution {
+    public static List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+
+        for (int i = 0; i < nums.length - 2; i++) {
+            if (i > 0 && nums[i] == nums[i - 1]) continue;
+
+            int left = i + 1;
+            int right = nums.length - 1;
+
+            while (left < right) {
+                int sum = nums[i] + nums[left] + nums[right];
+
+                if (sum == 0) {
+                    result.add(Arrays.asList(nums[i], nums[left], nums[right]));
+                    while (left < right && nums[left] == nums[left + 1]) left++;
+                    while (left < right && nums[right] == nums[right - 1]) right--;
+
+                    left++;
+                    right--;
+                } else if (sum < 0) {
+                    left++; // Need a larger sum
+                } else {
+                    right--; // Need a smaller sum
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {-1, 0, 1, 2, -1, -4};
+        System.out.println(threeSum(nums));
+    }
+}
+4)Daily Temperatures
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
+public class Solution {
+    public static int[] dailyTemperatures(int[] temperatures) {
+        int n = temperatures.length;
+        int[] answer = new int[n];
+        Deque<Integer> stack = new ArrayDeque<>(); // Stores indices
+
+        for (int i = 0; i < n; i++) {
+            while (!stack.isEmpty() && temperatures[i] > temperatures[stack.peek()]) {
+                int prevIndex = stack.pop();
+                answer[prevIndex] = i - prevIndex;
+            }
+            stack.push(i);
+        }
+
+        return answer;
+    }
+
+    public static void main(String[] args) {
+        int[] temperatures = {73, 74, 75, 71, 69, 72, 76, 73};
+        int[] result = dailyTemperatures(temperatures);
+        System.out.println(Arrays.toString(result));
+    }
+}
+5) Merge K Sorted Linked Lists
+import java.util.PriorityQueue;
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+}
+
+public class Solution {
+    public static ListNode mergeKLists(ListNode[] lists) {
+        if (lists == null || lists.length == 0) return null;
+        PriorityQueue<ListNode> minHeap = new PriorityQueue<>(
+            (a, b) -> Integer.compare(a.val, b.val)
+        );
+
+        // Add the head of each non-empty list to the heap
+        for (ListNode node : lists) {
+            if (node != null) {
+                minHeap.add(node);
+            }
+        }
+
+        ListNode dummy = new ListNode(0);
+        ListNode tail = dummy;
+
+        while (!minHeap.isEmpty()) {
+            ListNode smallest = minHeap.poll();
+            tail.next = smallest;
+            tail = tail.next;
+
+            if (smallest.next != null) {
+                minHeap.add(smallest.next);
+            }
+        }
+
+        return dummy.next;
+    }
+}
+6)Course Schedule II
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Queue;
+
+public class Solution {
+    public static int[] findOrder(int numCourses, int[][] prerequisites) {
+        List<List<Integer>> adj = new ArrayList<>();
+        int[] inDegree = new int[numCourses];
+        
+        for (int i = 0; i < numCourses; i++) {
+            adj.add(new ArrayList<>());
+        }
+        for (int[] req : prerequisites) {
+            int course = req[0];
+            int prereq = req[1];
+            adj.get(prereq).add(course);
+            inDegree[course]++;
+        }
+        Queue<Integer> queue = new ArrayDeque<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+
+        int[] order = new int[numCourses];
+        int index = 0;
+
+        while (!queue.isEmpty()) {
+            int current = queue.poll();
+            order[index++] = current;
+
+            for (int neighbor : adj.get(current)) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+        return index == numCourses ? order : new int[0];
+    }
+
+    public static void main(String[] args) {
+        int numCourses = 4;
+        int[][] prerequisites = {{1, 0}, {2, 0}, {3, 1}, {3, 2}};
+        System.out.println(Arrays.toString(findOrder(numCourses, prerequisites)));
+    }
+}
+7)Lowest Common Ancestor of a Binary Tree
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    TreeNode(int x) { val = x; }
+}
+
+public class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null || root == p || root == q) {
+            return root;
+        }
+
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left != null && right != null) {
+            return root;
+        }
+        return left != null ? left : right;
+    }
+}
+      
+
+   
+
+8) Longest Increasing Subsequence
+import java.util.Arrays;
+
+public class Solution {
+    public static int lengthOfLIS(int[] nums) {
+        if (nums == null || nums.length == 0) return 0;
+
+        int[] tails = new int[nums.length];
+        int size = 0;
+
+        for (int x : nums) {
+            int left = 0, right = size;
+
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (tails[mid] < x) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+
+            tails[left] = x;
+            if (left == size) {
+                size++;
+            }
+        }
+
+        return size;
+    }
+
+    public static void main(String[] args) {
+        int[] nums = {10, 9, 2, 5, 3, 7, 101, 18};
+        System.out.println(lengthOfLIS(nums));
+    }
+}
